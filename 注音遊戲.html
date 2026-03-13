@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>生日派對：注音大挑戰</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; margin: 0; background: #6c5ce7;
+            background: linear-gradient(135deg, #84C1FF 0%, #a29bfe 100%);
+            color: white; padding: 20px;
+        }
+        #game-container {
+            text-align: center; width: 100%; max-width: 500px;
+            background: white; padding: 40px 20px; border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 4px solid #fdcb6e;
+        }
+        #title { font-size: 24px; color: #2d3436; font-weight: bold; margin-bottom: 10px; }
+        #subtitle { color: #636e72; font-size: 14px; margin-bottom: 20px; }
+        #zhuyin-display { 
+            font-size: 90px; font-weight: 900; color: #d63031; 
+            margin: 30px 0; min-height: 120px; display: flex; align-items: center; justify-content: center;
+        }
+        button { 
+            width: 100%; font-size: 26px; font-weight: bold; padding: 20px; 
+            cursor: pointer; border: none; border-radius: 50px; 
+            background: #84C1FF; color: rgb(247, 248, 249); transition: 0.2s;
+            box-shadow: 0 6px 0 #e1b12c;
+        }
+        button:active { transform: translateY(4px); box-shadow: 0 2px 0 #e1b12c; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="title">🎉 派對注音大考驗 🎉</div>
+        <div id="zhuyin-display">READY</div>
+        <button onclick="nextQuestion()">👉下一題👈</button>
+    </div>
+
+    <script>
+        const questions = [
+            // 80 題 2 字組 (含誤導題)
+            "ㄍ ㄋ", "ㄐ ㄅ", "ㄍ ㄅ", "ㄇ ㄉ", "ㄊ ㄇ", "ㄙ ㄅ", "ㄎ ㄅ", "ㄒ ㄅ", "ㄅ ㄑ", "ㄈ ㄑ",
+            "ㄌ ㄐ", "ㄙ ㄋ", "ㄓ ㄋ", "ㄆ ㄒ", "ㄐ ㄨ", "ㄍ ㄇ", "ㄎ ㄋ", "ㄇ ㄐ", "ㄒ ㄐ", "ㄅ ㄋ",
+            "ㄓ ㄅ", "ㄋ ㄉ", "ㄍ ㄨ", "ㄗ ㄞ", "ㄩ ㄉ", "ㄈ ㄕ", "ㄌ ㄏ", "ㄒ ㄒ", "ㄐ ㄗ", "ㄇ ㄅ",
+            "ㄎ ㄌ", "ㄕ ㄕ", "ㄒ ㄏ", "ㄓ ㄉ", "ㄋ ㄌ", "ㄅ ㄆ", "ㄊ ㄅ", "ㄍ ㄍ", "ㄐ ㄉ", "ㄕ ㄐ",
+            "ㄒ ㄕ", "ㄌ ㄕ", "ㄗ ㄖ", "ㄏ ㄨ", "ㄈ ㄐ", "ㄉ ㄋ", "ㄆ ㄅ", "ㄎ ㄞ", "ㄧ ㄌ", "ㄩ ㄧ",
+            "ㄓ ㄓ", "ㄕ ㄨ", "ㄏ ㄏ", "ㄌ ㄎ", "ㄑ ㄔ", "ㄉ ㄒ", "ㄍ ㄆ", "ㄌ ㄌ", "ㄋ ㄋ", "ㄏ ㄐ",
+            "ㄇ ㄇ", "ㄗ ㄗ", "ㄉ ㄉ", "ㄅ ㄅ", "ㄈ ㄈ", "ㄎ ㄎ", "ㄒ ㄒ", "ㄕ ㄕ", "ㄔ ㄔ", "ㄖ ㄖ",
+            "ㄙ ㄙ", "ㄧ ㄧ", "ㄨ ㄨ", "ㄩ ㄩ", "ㄚ ㄚ", "ㄛ ㄛ", "ㄜ ㄜ", "ㄝ ㄝ", "ㄞ ㄞ", "ㄟ ㄟ",
+            // 20 題 3 字組
+            "ㄍ ㄋ ㄇ", "ㄋ ㄇ ㄉ", "ㄊ ㄇ ㄉ", "ㄙ ㄋ ㄌ", "ㄐ ㄅ ㄌ", "ㄒ ㄐ ㄐ", "ㄅ ㄎ ㄧ", "ㄨ ㄏ ㄌ", "ㄐ ㄉ ㄈ", "ㄕ ㄐ ㄕ",
+            "ㄌ ㄌ ㄌ", "ㄇ ㄕ ㄈ", "ㄍ ㄍ ㄉ", "ㄊ ㄅ ㄖ", "ㄏ ㄨ ㄉ", "ㄒ ㄆ ㄧ", "ㄅ ㄉ ㄌ", "ㄓ ㄋ ㄕ", "ㄎ ㄌ ㄅ", "ㄇ ㄇ ㄉ"
+        ];
+
+        function nextQuestion() {
+            const display = document.getElementById('zhuyin-display');
+            let newIndex = Math.floor(Math.random() * questions.length);
+            display.innerText = questions[newIndex];
+        }
+    </script>
+</body>
+</html>
