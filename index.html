@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>生日派對：注音大挑戰</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -62,7 +64,18 @@
             let newIndex = Math.floor(Math.random() * questions.length);
             display.innerText = questions[newIndex];
         }
+
+        function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                alert(`無法開啟全螢幕: ${err.message}`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+}
     </script>
 </body>
 </html>
-
