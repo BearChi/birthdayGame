@@ -5,47 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>生日派對：注音大挑戰</title>
+    <title>派對注音大挑戰</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body { 
-            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            height: 100vh; margin: 0; background: #6c5ce7;
-            background: linear-gradient(135deg, #84C1FF 0%, #a29bfe 100%);
-            color: white; padding: 20px;
+            margin: 0; 
+            padding: 0;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            font-family: 'PingFang TC', sans-serif;
+            overflow: hidden; /* 防止滾動條影響視覺 */
         }
+
         #game-container {
-            text-align: center; width: 100%; max-width: 500px;
-            background: white; padding: 40px 20px; border-radius: 40px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 4px solid #fdcb6e;
+            /* 關鍵設定：保持與螢幕邊緣的距離 */
+            width: 90vw; 
+            max-width: 600px;
+            height: 85vh; /* 比螢幕高度小一點 */
+            max-height: 500px;
+            
+            background: white; 
+            padding: 20px; 
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 4px solid #fdcb6e;
+            
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            transition: all 0.3s ease; /* 轉向時的平滑過渡 */
         }
-        #title { font-size: 24px; color: #2d3436; font-weight: bold; margin-bottom: 10px; }
-        #subtitle { color: #636e72; font-size: 14px; margin-bottom: 20px; }
+
+        /* 針對橫向螢幕 (Landscape) 的額外微調 */
+        @media (orientation: landscape) {
+            #game-container {
+                height: 90vh; /* 橫向時高度比例調整 */
+                width: 80vw;
+                max-width: 800px; /* 橫向時允許寬一點 */
+            }
+            #zhuyin-display { font-size: 100px; } /* 橫向空間多，字體加大 */
+        }
+
+        #title { font-size: 1.5rem; color: #2d3436; font-weight: bold; margin: 0; }
+        
         #zhuyin-display { 
-            font-size: 90px; font-weight: 900; color: #d63031; 
-            margin: 30px 0; min-height: 120px; display: flex; align-items: center; justify-content: center;
+            font-size: 80px; 
+            font-weight: 900; 
+            color: #d63031; 
+            word-break: break-all;
+            text-align: center;
         }
+
         button { 
-            width: 100%; font-size: 26px; font-weight: bold; padding: 20px; 
-            cursor: pointer; border: none; border-radius: 50px; 
-            background: #84C1FF; color: rgb(247, 248, 249); transition: 0.2s;
-            box-shadow: 0 6px 0 #e1b12c;
+            width: 80%; 
+            font-size: 24px; 
+            font-weight: bold; 
+            padding: 15px; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 50px; 
+            background: #fdcb6e; 
+            color: #2d3436; 
+            box-shadow: 0 5px 0 #e1b12c;
+            transition: 0.1s;
         }
-        button:active { transform: translateY(4px); box-shadow: 0 2px 0 #e1b12c; }
+
+        button:active { transform: translateY(3px); box-shadow: 0 2px 0 #e1b12c; }
     </style>
 </head>
 <body>
+
     <div id="game-container">
-        <div id="title">🎉 派對注音大考驗 🎉</div>
+        <div id="title">🎉 派對注音大考驗</div>
         <div id="zhuyin-display">READY</div>
-        <button onclick="nextQuestion()">👉下一題👈</button>
-        <button onclick="toggleFullScreen()" style="font-size: 14px; background: none; box-shadow: none; color: rgb(250, 11, 11); opacity: 0.5; margin-top: 10px;">切換全螢幕</button>
+        <button onclick="nextQuestion()">下一個題目 🎁</button>
     </div>
 
     <script>
         const questions = [
-            // 80 題 2 字組 (含誤導題)
+            // 80 題 2 字組
             "ㄍ ㄋ", "ㄐ ㄅ", "ㄍ ㄅ", "ㄇ ㄉ", "ㄊ ㄇ", "ㄙ ㄅ", "ㄎ ㄅ", "ㄒ ㄅ", "ㄅ ㄑ", "ㄈ ㄑ",
             "ㄌ ㄐ", "ㄙ ㄋ", "ㄓ ㄋ", "ㄆ ㄒ", "ㄐ ㄨ", "ㄍ ㄇ", "ㄎ ㄋ", "ㄇ ㄐ", "ㄒ ㄐ", "ㄅ ㄋ",
             "ㄓ ㄅ", "ㄋ ㄉ", "ㄍ ㄨ", "ㄗ ㄞ", "ㄩ ㄉ", "ㄈ ㄕ", "ㄌ ㄏ", "ㄒ ㄒ", "ㄐ ㄗ", "ㄇ ㄅ",
@@ -64,18 +107,6 @@
             let newIndex = Math.floor(Math.random() * questions.length);
             display.innerText = questions[newIndex];
         }
-
-        function toggleFullScreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
-                alert(`無法開啟全螢幕: ${err.message}`);
-            });
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
-        }
-}
     </script>
 </body>
 </html>
